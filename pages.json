@@ -1,0 +1,128 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle":"custom",
+				"navigationBarTitleText": "首页",//设置页面标题文字
+				"onReachBottomDistance":100
+			}
+		}
+        ,{
+            "path" : "pages/detail/detail",
+            "style" : {
+				"navigationBarTitleText": "详情"
+			}
+        }
+        ,{
+            "path" : "pages/progress/progress",
+            "style" : {
+				"navigationBarTitleText": "全部进展"
+			}
+        }
+        ,{
+            "path" : "pages/together/together",
+            "style" : {
+				"navigationBarTitleText": "一起捐"
+			}
+        }
+        ,{
+            "path" : "pages/record/record",
+            "style" : {
+				"navigationBarTitleText": "一起捐"
+			}
+        }
+        ,{
+            "path" : "pages/certificate/certificate",
+            "style" : {
+				"navigationBarTitleText": "证书"
+			}
+        }
+        ,{
+            "path" : "pages/payEnd/payEnd",
+            "style" : {
+				"navigationBarTitleText": ""
+			}
+        }
+        ,{
+            "path" : "pages/donateTogether/donateTogether",
+            "style" : {
+				"navigationBarTitleText": "一起捐"
+			}
+        }
+        ,{
+            "path" : "pages/agreement/agreement",
+            "style" : {
+				"navigationBarTitleText": ""
+			}
+        }
+        ,{
+            "path" : "pages/information/information",
+            "style" : {
+				"navigationBarTitleText": "资讯"
+			}
+        }
+        ,{
+            "path" : "pages/infoDetail/infoDetail",
+            "style" : {
+				"navigationBarTitleText": "详情"
+			}
+        }
+        ,{
+            "path" : "pages/apply/apply",
+            "style" : {
+				"navigationBarTitleText": "申请"
+			}
+        }
+        ,{
+            "path" : "pages/user/user",
+            "style" : {
+				"navigationBarTitleText": "我的"
+			}
+        }
+        ,{
+            "path" : "pages/user-program/user-program",
+            "style" : {
+				"navigationBarTitleText": "捐助项目"
+			}
+        }
+        ,{
+            "path" : "pages/contactUs/contactUs",
+            "style" : {
+				"navigationBarTitleText": "联系我们"
+			}
+        }
+        ,{
+            "path" : "pages/applyList/applyList",
+            "style" : {
+				"navigationBarTitleText": "申请列表"
+			}
+        }
+        ,{
+            "path" : "pages/mouth/mouth",
+            "style" : {
+				"navigationBarTitleText": ""
+			}
+        }
+        ,{
+            "path" : "pages/applyProgram/applyProgram",
+            "style" : {
+				"navigationBarTitleText": "申请项目"
+			}
+        }
+    ],
+	"globalStyle": {
+		//"navigationStyle":"custom",
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "",
+		"navigationBarBackgroundColor": "#FFFFFF"
+	},
+	"condition": { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": [{
+			"name": "", //模式名称
+			"path": "", //启动页面，必选
+			"query": "" //启动参数，在页面的onLoad函数里面得到
+		}]
+	}
+}
