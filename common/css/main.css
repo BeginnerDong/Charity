@@ -176,7 +176,7 @@ button{border-radius: initial;text-align: initial;font-size: 28rpx;background-co
 
 
 /* 标签 */
-.sign{font-size: 22rpx;line-height: 60rpx;padding: 0 30rpx;border-radius: 30rpx;display: inline-block;text-align: center;}
+.sign{font-size: 30rpx;line-height: 60rpx;padding: 0 30rpx;border-radius: 30rpx;display: inline-block;text-align: center;}
 
 
 /* 计数 */

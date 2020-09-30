@@ -101,9 +101,15 @@
         ,{
             "path" : "pages/mouth/mouth",
             "style" : {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "月捐管理"
 			}
         }
+		,{
+		    "path" : "pages/togetherOrder/togetherOrder",
+		    "style" : {
+				"navigationBarTitleText": "发起的一起捐"
+			}
+		}
         ,{
             "path" : "pages/applyProgram/applyProgram",
             "style" : {

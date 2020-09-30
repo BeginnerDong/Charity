@@ -4,7 +4,7 @@
 		 :circular='loop' @change='change' :previous-margin='previousMargin + "rpx"' :next-margin='nextMargin + "rpx"'>
 			<swiper-item v-for="(item,index) in list" :key='index' @click="$emit('clickItem',item)">
 				<view v-if="list && list.length>0" class="item" :class="[!crown ? '' : current==index ? 'crown-active':'crown']">
-					<image v-if="!slots" class="item-img" :class="[imgShadow?'imgShadow':'']" :src="item.url" :style="{ borderRadius: imgRadius + 'px',width:imgWidth}"
+					<image v-if="!slots" class="item-img" :class="[imgShadow?'imgShadow':'']" :src="item.mainImg[0].url" :style="{ borderRadius: imgRadius + 'px',width:imgWidth}"
 					 mode=""></image>
 					<slot v-else :data='item'></slot>
 				</view>
@@ -27,7 +27,7 @@
 			// 轮播图片key
 			imgKey: {
 				type: String,
-				required: true
+				required: false
 			},
 			// 高度
 			height: {
@@ -72,7 +72,7 @@
 			// 播放时间间隔
 			interval: {
 				type: Number,
-				default: 2000
+				default: 5000
 			},
 			// 滑动速度
 			duration: {
@@ -165,9 +165,9 @@
 			}
 
 			.curr-dot {
-				// height: 8rpx;
-				// width: 20rpx;
-				// border-radius: 4rpx;
+				//height: 8rpx;
+				//width: 22rpx;
+				//border-radius: 4rpx;
 				background-color: #FF8915;
 			}
 		}

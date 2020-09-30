@@ -2,17 +2,21 @@
 	<view>
 		
 		<view class="flex px-25 py-4">
-			<image src="../../static/images/my-img.png" class="wh110 radius-5"></image>
-			<view class="font-32 font-w pl-2">哆啦A梦</view>
+			<view  class="wh110 radius-5 overflow-h" @click="addScore">
+				<open-data type="userAvatarUrl"></open-data>
+			</view>
+			
+			<!-- <image src="../../static/images/my-img.png" class="wh110 radius-5"></image> -->
+			<view class="font-32 font-w pl-2"><open-data type="userNickName"></open-data></view>
 		</view>
 		<view class="flex colorf line-h Mgb radius10 mx-25 shadowM py-5 p-r overflow-h mb-3 top">
 			<image src="../../static/images/my-icon.png" class="icon p-a"></image>
 			<view class="w-50 flex4 p-r">
-				<view class="font-44 font-w pb-4">9</view>
+				<view class="font-44 font-w pb-4">{{allMoney}}</view>
 				<view class="font-24">捐款金额/元</view>
 			</view>
 			<view class="w-50 flex4 p-r">
-				<view class="font-44 font-w pb-4">2</view>
+				<view class="font-44 font-w pb-4">{{num}}</view>
 				<view class="font-24">捐款次数</view>
 			</view>
 		</view>
@@ -26,7 +30,7 @@
 			</view>
 		</view>
 		<view class="font-30 line-h mx-25 flex"
-		@click="Router.navigateTo({route:{path:'/pages/mouth/mouth?type=0'}})">
+		@click="Router.navigateTo({route:{path:'/pages/togetherOrder/togetherOrder'}})">
 			<image src="../../static/images/my-icon4.png" class="wh36 mr-3"></image>
 			<view class="flex1 flex-1 bB-f5 py-4">
 				<view>发起的一起捐</view>
@@ -34,7 +38,7 @@
 			</view>
 		</view>
 		<view class="font-30 line-h mx-25 flex"
-		@click="Router.navigateTo({route:{path:'/pages/mouth/mouth?type=1'}})">
+		@click="Router.navigateTo({route:{path:'/pages/mouth/mouth'}})">
 			<image src="../../static/images/my-icon2.png" class="wh36 mr-3"></image>
 			<view class="flex1 flex-1 bB-f5 py-4">
 				<view>月捐管理</view>
@@ -89,10 +93,61 @@
 	export default {
 		data() {
 			return {
-				Router:this.$Router
+				Router:this.$Router,
+				allMoney:0,
+				num:0
 			}
 		},
+		onLoad() {
+			const self = this;
+			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			self.$Utils.loadAll(['getOrderData'], self);
+		},
 		methods: {
+			
+			addScore() {
+				var self = this;
+				var postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.data = {
+					count:10000,
+					thirdapp_id:2,
+					type:3,
+					trade_info:'系统增送',
+					account:1
+				};
+				var callback = function(res) {
+					
+				};
+				self.$apis.flowLogAdd(postData, callback);
+			},
+			
+			getOrderData() {
+				var self = this;
+				var postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = {
+					user_no:uni.getStorageSync('user_info').user_no,
+					pay_status:1,
+					type:1
+				};
+				postData.compute = {
+					allPrice: [
+						'sum',
+						'price',
+						{user_no:uni.getStorageSync('user_info').user_no,pay_status:1,type:1}
+					],
+				};
+				var callback = function(res) {
+					if (res.info.data.length > 0) {
+						self.allMoney =self.$Utils.fmoney(res.info.compute.allPrice,2);
+					};
+					self.num  = res.info.total;
+					self.$Utils.finishFunc('getOrderData');
+				};
+				self.$apis.orderGet(postData, callback);
+			},
 			
 		}
 	}

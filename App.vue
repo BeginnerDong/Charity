@@ -1,6 +1,7 @@
 
 <script>
 	import token from "./common/token.js"
+	import api from "./apis/index.js"
 	export default {
 		onLaunch: function() {	
 			wx.getSystemInfo({
@@ -11,7 +12,14 @@
 			    this.globalData.customBar = custom.bottom + custom.top - e.statusBarHeight;
 			    //计算得到定义的状态栏高度
 			  }
-			})
+			});
+			
+			/* var postData = {};
+			postData.tokenFuncName = 'getProjectToken';
+			postData.noLoading = true;
+			var callback = function(res) {
+			};
+			api.userInfoGet(postData, callback); */
 		},
 		onShow: function() {
 			console.log('App Show')

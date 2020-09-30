@@ -2,34 +2,36 @@
 	<view>
 		
 		<view>
-			<image src="../../static/images/posters-img.png" class="img"></image>
+			<image :src="mainData.mainImg&&mainData.mainImg[0]?mainData.mainImg[0].url:''" class="img"></image>
 		</view>
 		
 		<view class="line-h flex4 con">
-			<image src="../../static/images/my-img.png" class="wh100"></image>
-			<view class="font-w pt-2">阿萨姆</view>
+			<view  class="wh100 radius-5 overflow-h z999">
+				<open-data type="userAvatarUrl"></open-data>
+			</view>
+			<view class="font-w pt-2"><open-data type="userNickName"></open-data></view>
 		</view>
 		
 		<view class="px-25 mt-5">
 			<view class="font-36 font-w">捐赠项目</view>
 			<view class="py-3 flex">
-				<image src="../../static/images/posters-img2.png" class="img1"></image>
+				<image :src="mainData.mainImg&&mainData.mainImg[0]?mainData.mainImg[0].url:''" class="img1"></image>
 				<view class="flex-1 pl-2 line-h">
-					<view class="pb-3">用爱助力脱白之旅</view>
-					<view class="font-24 color6 flex-1">陕西省慈善协会</view>
+					<view class="pb-3">{{mainData.title?mainData.title:''}}</view>
+					<view class="font-24 color6 flex-1">{{mainData.execution?mainData.execution:''}}</view>
 				</view>
 			</view>
 		</view>
 		
 		<view class="px-25 line-h">
 			<view class="font-36 mt-5 font-w pb-2">发起者</view>
-			<input type="text" value="" />
+			<input type="text" v-model="submitData.name" />
 			<view class="font-36 mt-5 font-w pb-2">发起说明</view>
-			<input type="text" value="每个人做一点点,世界就会改变很多" placeholder="" />
+			<input type="text" v-model="submitData.explain" value="每个人做一点点,世界就会改变很多" placeholder="" />
 			<view class="font-32 mt-5 font-w pb-2">限定每笔捐款金额（元）</view>
-			<input type="text" value="" placeholder="不限" />
+			<input type="digit" v-model="submitData.price" placeholder="请填写" />
 			<view class="font-32 mt-5 font-w pb-2">设定筹款目标（元）</view>
-			<input type="text" value="" placeholder="不限" />
+			<input type="text" v-model="submitData.purpose" placeholder="请填写" />
 		</view>
 		
 		<view class="py-5 mt-5 px-25 font-24 flex">
@@ -43,7 +45,7 @@
 		<view style="height: 120rpx;"></view>
 		<view class="p-2 p-fX bottom-0 shadowT bg-white z10">
 			<view class="btn80 Mgb colorf w-100"
-			@click="Router.navigateTo({route:{path:'/pages/together/together?type=1'}})">预览</view>
+			@click="submit">预览</view>
 		</view>
 		
 	</view>
@@ -53,10 +55,50 @@
 	export default {
 		data() {
 			return {
-				Router:this.$Router
+				Router:this.$Router,
+				mainData:{},
+				submitData:{
+					name:'',
+					explain:'每个人做一点点,世界就会改变很多',
+					price:'',
+					purpose:''
+				}
 			}
 		},
+		onLoad(options) {
+			const self = this;
+			self.id = options.id
+			self.$Utils.loadAll(['getMainData'], self);
+		},
 		methods: {
+			
+			submit(){
+				const self = this;
+				var pass = self.$Utils.checkComplete(self.submitData);
+				if(pass){
+					uni.setStorageSync('togetherSubmit',self.submitData)
+					self.Router.navigateTo({route:{path:'/pages/together/together?id='+self.id}})
+				}else{
+					self.$Utils.showToast('请补充信息','none')
+				}
+			},
+			
+			getMainData(isNew) {
+				var self = this;
+				var postData = {};
+				postData.searchItem = {
+					id:self.id
+				};
+				var callback = function(res) {
+					if (res.info.data.length > 0) {
+						self.mainData = res.info.data[0]
+						const regex = new RegExp('<img', 'gi');
+						self.mainData.content = self.mainData.content.replace(regex, `<img style="max-width: 100%;"`);
+					};
+					self.$Utils.finishFunc('getMainData');
+				};
+				self.$apis.projectGet(postData, callback);
+			},
 			
 		}
 	}

@@ -1,7 +1,22 @@
 <template>
-	<view class="px-25 bg-white">
+	<view>
 		
-		<view class="py-3 bB-f5" v-for="(item,index) in mainData" :key="index">
+		<view class="Mgb py-4 colorf line-h flex">
+			<view class="flex4 w-33 rb">
+				<view class="font-36 font-w pb-2">{{info.total_num}}</view>
+				<view class="font-22">发起一起捐/次</view>
+			</view>
+			<view class="flex4 w-33 rb">
+				<view class="font-36 font-w pb-2">{{info.order_num}}</view>
+				<view class="font-22">参与伙伴/位</view>
+			</view>
+			<view class="flex4 w-33">
+				<view class="font-36 font-w pb-2">{{info.total_price}}</view>
+				<view class="font-22">共筹善款/元</view>
+			</view>
+		</view>
+		
+		<view class="py-3 px-25 bB-f5" v-for="(item,index) in mainData" :key="index">
 			<view class="flex">
 				<image :src="item.project&&item.project[0]&&item.project[0].mainImg&&item.project[0].mainImg[0]?item.project[0].mainImg[0].url:''" class="img radius10"></image>
 				<view class="h160 flex5 flex-1 pl-2">
@@ -9,16 +24,15 @@
 					<view class="font-26 color9">已捐金额(元)： <text class="colorR">{{item.order?Utils.fmoney(item.order.allPrice,2):0}}</text></view>
 				</view>
 			</view>
-			<view class="font-24 color8 bg-f5 p-2 radius10 flex mt-2"
-			@click="Router.navigateTo({route:{path:'/pages/certificate/certificate'}})">
+
+			<view class="font-24 color8 bg-f5 p-2 radius10 flex mt-2">
 				<view class="flex-1 line-h-lg">
-					<view>捐款次数：1次</view>
-					<view>捐款时间：{{item.create_time}}</view>
-					<view>证书编号：{{item.passage1}}</view>
+					<view>捐款人数：{{item.order?item.order.count:0}}</view>
+					<view>发起时间：{{item.create_time}}</view>
 				</view>
-				<image src="../../static/images/my-icon6.png" class="R-icon ml-1"></image>
 			</view>
 		</view>
+		
 		
 	</view>
 </template>
@@ -28,16 +42,42 @@
 		data() {
 			return {
 				Router:this.$Router,
+				info:{
+					order_num:0,
+					total_num:0,
+					total_price:0
+				},
 				mainData:[],
 				Utils:this.$Utils
 			}
 		},
-		onLoad() {
+		onLoad(options) {
 			const self = this;
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
-			self.$Utils.loadAll(['getMainData'], self);
+			self.$Utils.loadAll(['getTeamNum','getMainData'], self);
+		},
+		onReachBottom() {
+			console.log('onReachBottom')
+			const self = this;
+			if (!self.isLoadAll && uni.getStorageSync('loadAllArray')) {
+				self.paginate.currentPage++;
+				self.getMainData()
+			};
 		},
 		methods: {
+			
+			getTeamNum() {
+				var self = this;
+				var postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				var callback = function(res) {
+					if (res.solely_code == 100000) {
+						self.info  = res.info
+					};
+					self.$Utils.finishFunc('getTeamNum');
+				};
+				self.$apis.getTeamNum(postData, callback);
+			},
 			
 			getMainData(isNew) {
 				var self = this;
@@ -54,8 +94,8 @@
 				postData.tokenFuncName = 'getProjectToken';
 				postData.paginate = self.$Utils.cloneForm(self.paginate);
 				postData.searchItem = {
-					pay_status:1,
-					type:1
+					project_id:self.id,
+					user_type:0
 				};
 				postData.getAfter = {
 					project: {
@@ -67,7 +107,7 @@
 						key: 'id',
 						condition: 'in',
 					},
-					order:{
+					order: {
 						tableName: 'Order',
 						searchItem: {
 							status:1,
@@ -75,7 +115,7 @@
 							user_type:0,
 							type:1
 						},
-						middleKey: 'project_id',
+						middleKey: 'id',
 						key: 'project_id',
 						condition: 'in',
 						compute:{
@@ -83,28 +123,32 @@
 						    'sum',
 						    'price',
 						    {
-						     status:1,
-						     pay_status:1,
-						     user_type:0,
-							 type:1
+						      status:1,pay_status:1,user_type:0,type:1
+						    }
+						  ],
+						  count:[
+						    'count',
+						    'count',
+						    {
+						      status:1,pay_status:1,user_type:0,type:1
 						    }
 						  ]
 						},
-					}
+					},
 				};
 				var callback = function(res) {
 					if (res.info.data.length > 0) {
 						self.mainData.push.apply(self.mainData, res.info.data);
 					};
-					self.$Utils.finishFunc('getMainData');
 				};
-				self.$apis.orderGet(postData, callback);
+				self.$apis.teamGet(postData, callback);
 			},
+			
 			
 		}
 	}
 </script>
-<style>page{background-color: #f5f5f5;}</style>
+
 <style scoped>
 .img{width: 220rpx;height: 160rpx;}
 .h160{height: 160rpx;}
