@@ -93,10 +93,7 @@
 				var postData = {};
 				postData.tokenFuncName = 'getProjectToken';
 				postData.paginate = self.$Utils.cloneForm(self.paginate);
-				postData.searchItem = {
-					project_id:self.id,
-					user_type:0
-				};
+				
 				postData.getAfter = {
 					project: {
 						tableName: 'Project',
@@ -116,7 +113,7 @@
 							type:1
 						},
 						middleKey: 'id',
-						key: 'project_id',
+						key: 'team_id',
 						condition: 'in',
 						compute:{
 						  allPrice:[
@@ -140,6 +137,7 @@
 					if (res.info.data.length > 0) {
 						self.mainData.push.apply(self.mainData, res.info.data);
 					};
+					self.$Utils.finishFunc('getMainData');
 				};
 				self.$apis.teamGet(postData, callback);
 			},

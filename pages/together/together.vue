@@ -20,11 +20,11 @@
 		</view>
 		
 		<view class="shadowM my-5 px-25 py-4 flex">
-			<image src="../../static/images/posters-img2.png" class="img1"></image>
+			<image :src="mainData.mainImg&&mainData.mainImg[0]?mainData.mainImg[0].url:''" class="img1"></image>
 			<view class="flex5 h120 flex-1 pl-2">
 				<view class="font-w">{{mainData.title?mainData.title:''}}</view>
 				<view class="font-24 color6 flex-1">{{mainData.execution?mainData.execution:''}}</view>
-				<view class="flex color9 font-22">
+				<view class="flex color9 font-22" @click="open">
 					<view>查看详情</view>
 					<image src="../../static/images/details-icon7.png" class="B-icon ml-1"></image>
 				</view>
@@ -72,16 +72,19 @@
 						<view class="font-26 color9 text-r">--{{submitData.name?submitData.name:''}}</view>
 					</view>
 					<view class="flex p-3">
-						<image src="../../static/images/my-img.png" class="wh80 radus-5"></image>
+						<view  class="wh80 radus-5 overflow-h">
+							<open-data type="userAvatarUrl"></open-data>
+						</view>
+						<!-- <image src="../../static/images/my-img.png" class="wh80 radus-5"></image> -->
 						<view class="font-22 line-h flex-1 pl-2">
 							<view class="color9 pb-2">请和我一起支持</view>
 							<view>【{{mainData.title?mainData.title:''}}】</view>
 						</view>
-						<image src="../../static/images/certificate-img.png" class="wh110"></image>
+						<image :src="qrUrl" class="wh110"></image>
 					</view>
 				</view>
 				<view class="flex1 py-5">
-					<view class="btn80 bg-white colorM">保存成图片</view>
+					<view class="btn80 bg-white colorM" @click="canvasImage">保存成图片</view>
 					<button class="btn80 Mgb colorf" open-type="share">邀请朋友参与</button>
 				</view>
 				<view class="mt-2 p-3 flex0" @click="Show(2)">
@@ -90,22 +93,36 @@
 			</view>
 		</view>
 		
-		<view class="pc-container" style="position: fixed;left:0;top: 0;z-index: 9999;" v-show="canvasShow">
+		<view class="pc-container" style="position: fixed;left:0;top: 9999px" v-show="canvasShow">
 			<!-- <image :src="imgurl" mode="aspectFill" @longpress="saveImage"></image> -->
 			<canvas canvas-id="mycanvas"  :style="{width: width+'px',height:height+'px'}"></canvas>
 		</view>
+		
+		<uni-popup ref="popup" type="bottom">
+			<view class="font-40 font-w">项目详情</view>
+			<view class="ql-editor" style="padding:0;" v-html="mainData.project&&mainData.project[0]?mainData.project[0].content:''">
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
+	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import uniPopupMessage from '@/components/uni-popup/uni-popup-message.vue'
+	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
 	export default {
+		components: {
+			uniPopup,
+			uniPopupMessage,
+			uniPopupDialog
+		},
 		data() {
 			return {
 				Router:this.$Router,
 				
 				public_show:false,
 				jk_show:false,
-				share_show:true,
+				share_show:false,
 				submitData:{
 					
 				},
@@ -156,6 +173,10 @@
 			}
 		},
 		methods: {
+			
+			open() {
+				this.$refs.popup.open()
+			},
 			
 			writeTextOnCanvas(ctx_2d, lineheight, bytelength, text, startleft, starttop) {
 				function getTrueLength(str) { //获取字符串的真实长度（字节长度）
@@ -245,6 +266,7 @@
 				uni.getImageInfo({
 					src: headImg, //网络路径
 					success: function(res) {
+						
 						var r = 20*self.rpx;
 						var x = 15*self.rpx;
 						var y = 290*self.rpx;
@@ -260,35 +282,11 @@
 						myCanvas.draw(true)
 					}
 				});
-				
-				return
-				myCanvas.textAlign = 'center' //文字居中
-				myCanvas.font = 'bold 18px Arial'
+				myCanvas.font = 'bold 11px Arial'
+				myCanvas.fillStyle = '#999';
+				myCanvas.fillText('请和我一起支持',70*self.rpx, 300 *self.rpx);
 				myCanvas.fillStyle = '#222';
-				myCanvas.fillText('MAY BEE', 175 *self.rpx, 30*self.rpx, 350 *self.rpx);
-				myCanvas.save()
-				myCanvas.restore(); //恢复之前保存的绘图上下文 恢复之前保存的绘图上下午即状态 可以继续绘制
-				myCanvas.draw(true);
-				var bannerImg = this.mainData.bannerImg[0].url;
-				uni.getImageInfo({
-					src: bannerImg, //网络路径
-					success: function(res) {
-						console.log('bannerImg', res)
-						self.isCom1 = true;
-						myCanvas.drawImage(res.path, 20*self.rpx, 70*self.rpx, 307*self.rpx, 307*self.rpx);
-						myCanvas.save()
-						myCanvas.restore(); //恢复之前保存的绘图上下文 恢复之前保存的绘图上下午即状态 可以继续绘制
-						myCanvas.draw(true)
-					}
-				});
-				myCanvas.setTextAlign('left')
-				this.writeTextOnCanvas(myCanvas, 20, 35*self.rpx, self.mainData.title, 20*self.rpx, 425*self.rpx)
-				myCanvas.save()
-				myCanvas.restore(); //恢复之前保存的绘图上下文 恢复之前保存的绘图上下午即状态 可以继续绘制
-				myCanvas.draw(true);
-				myCanvas.font = 'bold 16px Arial'
-				myCanvas.fillStyle = '#EF2732';
-				myCanvas.fillText('￥' + self.mainData.price, 20*self.rpx, 470*self.rpx);
+				myCanvas.fillText('【'+self.mainData.title+'】',70*self.rpx, 325 *self.rpx);
 				myCanvas.save()
 				myCanvas.restore(); //恢复之前保存的绘图上下文 恢复之前保存的绘图上下午即状态 可以继续绘制
 				myCanvas.draw(true);
@@ -297,9 +295,9 @@
 					src: qr,
 					complete(res)  {
 						console.log('res',res)
-						self.isCom2 = true;
+						//self.isCom2 = true;
 						myCanvas.drawImage(res.path, 275*self.rpx,
-							400*self.rpx, 60*self.rpx, 60*self.rpx);
+							290*self.rpx, 55*self.rpx, 55*self.rpx);
 							
 						myCanvas.save()
 						myCanvas.restore(); //恢复之前保存的绘图上下文 恢复之前保存的绘图上下午即状态 可以继续绘制
@@ -466,7 +464,7 @@
 						const regex = new RegExp('<img', 'gi');
 						self.mainData.content = self.mainData.content.replace(regex, `<img style="max-width: 100%;"`);
 						self.getQrCode()
-						self.canvasImage()
+						//self.canvasImage()
 					};
 					self.$Utils.finishFunc('getMainData');
 				};

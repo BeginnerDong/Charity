@@ -207,7 +207,10 @@
 					if (res.info.data.length > 0) {
 						self.mainData.push.apply(self.mainData, res.info.data);
 					};
-					self.num = res.info.total;
+					if(!self.searchItem.label_id){
+						self.num = res.info.total;
+					}
+					
 					self.$Utils.finishFunc('getMainData');
 				};
 				self.$apis.projectGet(postData, callback);

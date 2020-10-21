@@ -15,7 +15,7 @@
 			<picker mode="selector" :range="ageData" @change="changeAge">
 				<view class="py-4 bB-e1 flex1">
 					<view>年龄</view>
-					<view class="font-24 color9 flex-1 text-r">{{submitData.age?submitData.age:'请选择'}}</view>
+					<view class="font-24 color9 flex-1 text-r" :class="submitData.age!=''?'color2':''">{{submitData.age?submitData.age:'请选择'}}</view>
 					<image src="../../static/images/my-icon6.png" class="R-icon ml-1"></image>
 				</view>
 			</picker>
@@ -44,10 +44,10 @@
 				<view>家庭住址</view>
 				<input type="text" v-model="submitData.address" placeholder="请输入" placeholder-style="color:#999" />
 			</view>
-			<picker mode="selector" :range="labelData" @change="chageLabel" :range-key="title">
+			<picker mode="selector" :range="labelData" @change="chageLabel" range-key="title">
 				<view class="py-4 bB-e1 flex1">
-					<view>项目类别</view>
-					<view class="font-24 color9 flex-1 text-r">{{labelTitle?labelTitle:'请选择'}}</view>
+					<view>项目类型</view>
+					<view class="font-24 color9 flex-1 text-r" :class="submitData.age!=''?'color2':''">{{labelTitle?labelTitle:'请选择'}}</view>
 					<image src="../../static/images/my-icon6.png" class="R-icon ml-1"></image>
 				</view>
 			</picker>
@@ -85,45 +85,46 @@
 			
 			<view class="py-4 bB-e1 flex1">
 				<view>项目名称</view>
-				<input type="text" value="" placeholder="请输入" placeholder-style="color:#999" />
+				<input type="text" v-model="submitDataTwo.title" placeholder="请输入" placeholder-style="color:#999" />
 			</view>
 			<view class="py-4 bB-e1 flex1">
 				<view>项目地点</view>
-				<input type="text" value="" placeholder="请输入" placeholder-style="color:#999" />
+				<input type="text" v-model="submitDataTwo.address" placeholder="请输入" placeholder-style="color:#999" />
 			</view>
 			<view class="py-4 bB-e1 flex1">
 				<view>联系人</view>
-				<input type="text" value="" placeholder="请输入" placeholder-style="color:#999" />
+				<input type="text" v-model="submitDataTwo.name" placeholder="请输入" placeholder-style="color:#999" />
 			</view>
 			<view class="py-4 bB-e1 flex1">
 				<view>联系电话</view>
-				<input type="text" value="" placeholder="请输入" placeholder-style="color:#999" />
+				<input type="text" v-model="submitDataTwo.phone" placeholder="请输入" placeholder-style="color:#999" />
 			</view>
-			<picker mode="selector">
+			<picker mode="selector" :range="labelData" @change="chageLabel" range-key="title">
 				<view class="py-4 bB-e1 flex1">
 					<view>项目类型</view>
-					<view class="font-24 color9 flex-1 text-r">请选择</view>
+					<view class="font-24 color9 flex-1 text-r" :class="submitData.age!=''?'color2':''">{{labelTitle?labelTitle:'请选择'}}</view>
 					<image src="../../static/images/my-icon6.png" class="R-icon ml-1"></image>
 				</view>
 			</picker>
 			<view class="py-4 bB-e1">
 				<view>现状详情</view>
-				<textarea type="text" value="" placeholder="请输入" placeholder-style="color:#999" />
+				<textarea type="text" v-model="submitDataTwo.details" placeholder="请输入" placeholder-style="color:#999" />
 			</view>
+			
 			<view class="py-4 bB-e1">
 				<view>实施方案</view>
 				<view class="flex flex-wrap">
-					<image src="../../static/images/details-img1.png" class="wh200 mt-3 mr-2"></image>
-					<view class="wh200 flex0 bg-f5 mt-3 mr-2">
-						<image src="../../static/images/toapplyfor-icon2.png" class="sc"></image>
+					<image v-if="submitDataTwo.programme.length>0" src="../../static/images/toapplyfor-icon6.png" class="wh200 mt-3 mr-2"></image>
+					<view class="wh200 flex0 bg-f5 mt-3 mr-2" @click="upLoadImgTwo('programme')" v-if="submitDataTwo.programme.length==0">
+						<image src="../../static/images/toapplyfor-icon5.png" class="sc"></image>
 					</view>
 				</view>
 			</view>
 			<view class="py-4 bB-e1">
-				<view>上传营业执照</view>
+				<view>营业执照</view>
 				<view class="flex flex-wrap">
-					<image src="../../static/images/details-img1.png" class="wh200 mt-3 mr-2"></image>
-					<view class="wh200 flex0 bg-f5 mt-3 mr-2">
+					<image v-if="submitDataTwo.mainImg.length>0" :src="submitDataTwo.mainImg&&submitDataTwo.mainImg[0]?submitDataTwo.mainImg[0].url:''" class="wh200 mt-3 mr-2"></image>
+					<view class="wh200 flex0 bg-f5 mt-3 mr-2" @click="upLoadImgTwo('mainImg')" v-if="submitDataTwo.mainImg.length==0">
 						<image src="../../static/images/toapplyfor-icon2.png" class="sc"></image>
 					</view>
 				</view>
@@ -131,20 +132,19 @@
 			<view class="py-4 bB-e1">
 				<view>法人与本人身份证合照</view>
 				<view class="flex flex-wrap">
-					<image src="../../static/images/details-img1.png" class="wh200 mt-3 mr-2"></image>
-					<view class="wh200 flex0 bg-f5 mt-3 mr-2">
+					<image v-if="submitDataTwo.identityImg.length>0" :src="submitDataTwo.identityImg&&submitDataTwo.identityImg[0]?submitDataTwo.identityImg[0].url:''" class="wh200 mt-3 mr-2"></image>
+					<view class="wh200 flex0 bg-f5 mt-3 mr-2" @click="upLoadImgTwo('identityImg')" v-if="submitDataTwo.identityImg.length==0">
 						<image src="../../static/images/toapplyfor-icon2.png" class="sc"></image>
 					</view>
 				</view>
 			</view>
-			
 		</view>
 		
 		
 		<view class="px-25">
-			<view class="flex py-3 mt-5">
-				<image src="../../static/images/toapplyfor-icon1.png" class="wh30 mr-1"></image>
-				<!-- <image src="../../static/images/toapplyfor-icon.png" class="wh30 mr-1"></image> -->
+			<view class="flex py-3 mt-5" >
+				<image @click="chooseThis" :src="isChoose?'../../static/images/toapplyfor-icon1.png':'../../static/images/toapplyfor-icon.png'" class="wh30 mr-1"></image>
+				
 				<view class="font-24 color8">
 					你已阅读并同意 <text class="colorM"
 					@click="Router.navigateTo({route:{path:'/pages/agreement/agreement?type=1'}})">《用户须知》</text>
@@ -178,7 +178,7 @@
 			</view>
 			<view class="item" @click="Router.redirectTo({route:{path:'/pages/information/information'}})">
 				<image src="../../static/images/nabar2.png" mode=""></image>
-				<view>咨询</view>
+				<view>资讯</view>
 			</view>
 			<view class="item on">
 				<image src="../../static/images/nabar3-a.png" mode=""></image>
@@ -215,9 +215,22 @@
 					identityImg:[],
 					type:1
 				},
+				submitDataTwo:{
+					title:'',
+					address:'',
+					name:'',
+					type:2,
+					phone:'',
+					label_id:'',
+					details:'',
+					programme:[],
+					mainImg:[],
+					identityImg:[]
+				},
 				ageData:[],
 				labelData:[],
-				labelTitle:''
+				labelTitle:'',
+				isChoose:false
 			}
 		},
 		onLoad() {
@@ -229,15 +242,39 @@
 		},
 		methods: {
 			
+			chooseThis(){
+				const self = this;
+				self.isChoose = !self.isChoose
+			},
+			
 			submit() {
 				const self = this;
 				uni.setStorageSync('canClick', false);
+				if(!self.isChoose){
+					self.$Utils.showToast('请阅读并同意用户须知','none')
+					uni.setStorageSync('canClick', true);
+					return
+				};
 				if(self.liCurr==1){
 					var pass = self.$Utils.checkComplete(self.submitData)
 				}else{
 					var pass = self.$Utils.checkComplete(self.submitDataTwo)
 				};
 				if(pass){
+					if(self.liCurr==1){
+						
+						if(!/^\d{17}(\d|x)$/i.test(self.submitData.card_no)) {
+							uni.setStorageSync('canClick', true);
+							self.$Utils.showToast('你输入的身份证长度或格式错误', 'none', 1000)
+							return;
+						};
+					};
+					
+					if (self.submitData.phone.trim().length != 11 || !/^1[3|4|5|6|7|8|9]\d{9}$/.test(self.submitData.phone)) {
+						uni.setStorageSync('canClick', true);
+						self.$Utils.showToast('请输入正确的手机号', 'none', 1000)
+						return;
+					};
 					self.applyAdd();
 				}else{
 					self.$Utils.showToast('请填写完整信息','none')
@@ -303,6 +340,75 @@
 				})			
 			},
 			
+			upLoadImgTwo(type) {
+				const self = this;
+				
+				uni.showLoading({
+					mask: true,
+					title: '上传中',
+				});
+				if(type=='programme'){
+					const callback = (res) => {
+						console.log('res', res)
+						if (res.solely_code == 100000) {
+							self.submitDataTwo[type] = [];
+							self.submitDataTwo[type].push({url:res.info.url,type:'file'})
+							uni.hideLoading();
+						} else {
+							self.$Utils.showToast('网络故障', 'none')
+						}
+					};		
+					wx.chooseMessageFile({
+						count:1,
+						type:'file',
+						success: function(res){
+							console.log(res)
+							var file = res.tempFiles[0];
+							var ext = 'file';
+							console.log(callback)
+							self.$Utils.uploadFile(file.path, 'file', {
+								tokenFuncName: 'getProjectToken',ext:ext,md5:'md5',totalSize:file.size,start:0,chunkSize:file.size,originName:file.name
+							}, callback)
+						},
+						fail: function(err) {
+							uni.hideLoading();
+						},		
+					});
+					
+					return
+				};
+				const callback = (res) => {
+					console.log('res', res)
+					if (res.solely_code == 100000) {
+						self.submitDataTwo[type] = [];
+						self.submitDataTwo[type].push({url:res.info.url,type:'image'})
+						uni.hideLoading();
+					} else {
+						self.$Utils.showToast('网络故障', 'none')
+					}
+				};				
+				uni.chooseImage({
+					count: 1,
+					success: function(res) {
+						var tempFilePaths = res.tempFilePaths;
+						console.log('res11',res)
+						for (var i = 0; i < tempFilePaths.length; i++) {
+							var file = res.tempFiles[i];
+							console.log('res.tempFiles[i].path',res.tempFiles[i].path)
+							var obj = res.tempFiles[i].path.lastIndexOf(".");
+							var ext = 'jpg';
+							console.log(callback)
+							self.$Utils.uploadFile(tempFilePaths[i], 'file', {
+								tokenFuncName: 'getProjectToken',ext:ext,md5:'md5',totalSize:file.size,start:0,chunkSize:file.size,originName:''
+							}, callback)
+						}
+					},
+					fail: function(err) {
+						uni.hideLoading();
+					},			
+				})			
+			},
+			
 			getLabelData() {
 				const self = this;
 				const postData = {};
@@ -335,6 +441,7 @@
 			chageLabel(e){
 				const self = this;
 				self.submitData.label_id = self.labelData[e.detail.value].id;
+				self.submitDataTwo.label_id = self.labelData[e.detail.value].id;
 				self.labelTitle = self.labelData[e.detail.value].title;
 			},
 			
@@ -366,7 +473,20 @@
 						identityImg:[],
 						type:1
 					}
-				};
+				}else{
+					self.submitDataTwo = {
+						title:'',
+						address:'',
+						name:'',
+						type:2,
+						phone:'',
+						label_id:'',
+						details:'',
+						programme:[],
+						mainImg:[],
+						identityImg:[]
+					}
+				}
 			},
 		}
 	}

@@ -239,7 +239,18 @@ export default {
 		http.HTTP(allParams);
 	},
 	
-	
+	applyGet(param, callback) {
+		var allParams = {
+			url: 'Common/Apply/get',
+			type: 'post',
+			noToken: true,
+			data: param,
+			sCallback: function(data) {
+				callback && callback(data);
+			}
+		};
+		http.HTTP(allParams);
+	},
 	
 	messageAdd(param, callback) {
 		var allParams = {

@@ -35,10 +35,12 @@
 		</view>
 		
 		<view class="py-5 mt-5 px-25 font-24 flex">
-			<!-- <image src="../../static/images/toapplyfor-icon.png" class="wh32 mr-1"></image> -->
-			<image src="../../static/images/toapplyfor-icon1.png" class="wh32 mr-1"></image>
-			<view class="color9">同意 <text class="color2"
-			@click="Router.navigateTo({route:{path:'/pages/agreement/agreement?type=1'}})">《用户协议》</text></view>
+			<image @click="chooseThis" :src="isChoose?'../../static/images/toapplyfor-icon1.png':'../../static/images/toapplyfor-icon.png'" class="wh30 mr-1"></image>
+			
+			<view class="font-24 color8">
+				你已阅读并同意 <text class="colorM"
+				@click="Router.navigateTo({route:{path:'/pages/agreement/agreement?type=1'}})">《用户须知》</text>
+			</view>
 		</view>
 		
 		
@@ -62,7 +64,8 @@
 					explain:'每个人做一点点,世界就会改变很多',
 					price:'',
 					purpose:''
-				}
+				},
+				isChoose:false
 			}
 		},
 		onLoad(options) {
@@ -72,8 +75,18 @@
 		},
 		methods: {
 			
+			chooseThis(){
+				const self = this;
+				self.isChoose = !self.isChoose
+			},
+			
 			submit(){
 				const self = this;
+				if(!self.isChoose){
+					self.$Utils.showToast('请阅读并同意用户须知','none')
+					uni.setStorageSync('canClick', true);
+					return
+				};
 				var pass = self.$Utils.checkComplete(self.submitData);
 				if(pass){
 					uni.setStorageSync('togetherSubmit',self.submitData)
@@ -94,7 +107,7 @@
 						self.mainData = res.info.data[0]
 						const regex = new RegExp('<img', 'gi');
 						self.mainData.content = self.mainData.content.replace(regex, `<img style="max-width: 100%;"`);
-					};
+					};	
 					self.$Utils.finishFunc('getMainData');
 				};
 				self.$apis.projectGet(postData, callback);

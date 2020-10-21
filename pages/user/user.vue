@@ -74,7 +74,7 @@
 			</view>
 			<view class="item" @click="Router.redirectTo({route:{path:'/pages/information/information'}})">
 				<image src="../../static/images/nabar2.png" mode=""></image>
-				<view>咨询</view>
+				<view>资讯</view>
 			</view>
 			<view class="item" @click="Router.redirectTo({route:{path:'/pages/apply/apply'}})">
 				<image src="../../static/images/nabar3.png" mode=""></image>

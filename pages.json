@@ -26,6 +26,12 @@
 				"navigationBarTitleText": "一起捐"
 			}
         }
+		,{
+		    "path" : "pages/goTogether/goTogether",
+		    "style" : {
+				"navigationBarTitleText": "一起捐"
+			}
+		}
         ,{
             "path" : "pages/record/record",
             "style" : {

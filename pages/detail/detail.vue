@@ -16,14 +16,17 @@
 		</view>
 		<view class="f5Bj-H20"></view>
 		
-		<view class="px-2 py-3 p-r">
+		<view class="px-2 py-3 p-r"  >
 			<view class="font-34 line-h pl-2 title">求助人故事</view>
-			<view class="font-30 py-2 content" id="content" :style="{height:open?'auto':'400rpx'}">
-				<view class="content ql-editor" style="padding:0;" v-html="mainData.content">
+			<view class="font-30 py-2" :style="{height:showHeight+'px'}" style="overflow: hidden;">
+				<view  id="content" class="content">
+					<view class="ql-editor" style="padding:0;" v-html="mainData.content">
+					</view>
 				</view>
 			</view>
 			
-			<view class="py-2 bg-white p-aX bottom-0" :class="open?'':'zk'">
+			
+			<view class="py-2 bg-white p-aX bottom-0" :class="open?'':'zk'" v-show="contentHeight>200">
 				<view class="btn50 bg-f5 flex0" @click="openShow()">
 					<image src="../../static/images/icon.png" class="wh20 mr-1" v-if="open"></image>
 					<image src="../../static/images/icon1.png" class="wh20 mr-1" v-else></image>
@@ -59,16 +62,17 @@
 		<view class="px-25 py-4">
 			<view class="font-34 line-h pl-2 title">筹款记录</view>
 			<view class="py-4 p-r line-h font-26 flex1" v-if="teamData.length>0"
-			@click="Router.navigateTo({route:{path:'/pages/record/record'}})"> 
+			@click="Router.navigateTo({route:{path:'/pages/record/record?id='+mainData.id}})"> 
 				<view>{{totalTeam}}人发起了一起捐</view>
 				<image src="../../static/images/my-icon6.png" class="R-icon"></image>
 			</view>
 			<view class="flex1" v-if="teamData.length>0">
-				<view class="flex4 font-26" v-for="(item,index) in 4" :key="index"
-				@click="Router.navigateTo({route:{path:'/pages/together/together'}})">
-					<image src="../../static/images/details-img2.png" class="wh100 radius-5 mb-1"></image>
-					<view>猜猜我是谁</view>
-					<view>携手3人</view>
+				<view class="flex4 font-26" v-for="(item,index) in teamData" :key="index"
+				:data-id="item.id"
+				@click="Router.navigateTo({route:{path:'/pages/goTogether/goTogether?id='+$event.currentTarget.dataset.id}})">
+					<image :src="item.user&&item.user[0]?item.user[0].headImgUrl:''" class="wh100 radius-5 mb-1"></image>
+					<view>{{item.user&&item.user[0]?item.user[0].nickname:''}}</view>
+					<view>携手{{item.order?item.order.count:0}}人</view>
 				</view>
 			</view>
 			<view class="font-24 pt-4" v-if="orderData.length>0">
@@ -88,15 +92,15 @@
 		
 		<view class="px-25 py-4 line-h">
 			<view class="font-34 line-h pl-2 pb-1 title">执行机构信息</view>
-			<view class="pt-3"><text class="font-w">备案号</text>：{{mainData.record_no}}</view>
-			<view class="pt-3"><text class="font-w">收款机构</text>：{{mainData.collection}}</view>
-			<view class="pt-3"><text class="font-w">执行机构</text>：{{mainData.execution}}</view>
+			<view class="pt-3"><text class="font-w">备案号</text>：{{mainData.record_no?mainData.record_no:''}}</view>
+			<view class="pt-3"><text class="font-w">收款机构</text>：{{mainData.collection?mainData.collection:''}}</view>
+			<view class="pt-3"><text class="font-w">执行机构</text>：{{mainData.execution?mainData.execution:''}}</view>
 		</view>
 		<view class="f5Bj-H20"></view>
 		
 		<view class="flex px-25 py-3">
-			<image src="../../static/images/toapplyfor-icon1.png" class="wh30 mr-1"></image>
-			<!-- <image src="../../static/images/toapplyfor-icon.png" class="wh30 mr-1"></image> -->
+			<image @click="chooseThis" :src="isChoose?'../../static/images/toapplyfor-icon1.png':'../../static/images/toapplyfor-icon.png'" class="wh30 mr-1"></image>
+			
 			<view class="font-24 color8">
 				你已阅读并同意 <text class="colorM"
 				@click="Router.navigateTo({route:{path:'/pages/agreement/agreement?type=0'}})">《捐款须知》</text>
@@ -106,12 +110,12 @@
 		
 		<!-- 捐款按钮 -->
 		<view style="height: 100rpx;"></view>
-		<view class="shadowT bg-white flex1 py-1 px-25 p-fX bottom-0">
+		<view class="shadowT bg-white flex1 py-1 px-25 p-fX bottom-0" v-if="mainData.progress_status==0">
 			<view class="flex">
-				<view class="flex4 font-24 line-h px-25" @click="Show(0)">
+				<button class="flex4 font-24 line-h px-25" open-type="share">
 					<image src="../../static/images/details-icon3.png" class="wh34 mb-1"></image>
 					<view>分享</view>
-				</view>
+				</button>
 				<view class="flex4 font-24 line-h px-25"
 				@click="Router.navigateTo({route:{path:'/pages/donateTogether/donateTogether?id='+mainData.id}})">
 					<image src="../../static/images/details-icon2.png" class="wh34 mb-1"></image>
@@ -122,9 +126,9 @@
 		</view>
 		
 		<!-- 结束按钮 -->
-		<!-- <view class="shadowT bg-white flex1 py-1 px-25 p-fX bottom-0">
+		<view class="shadowT bg-white flex1 py-1 px-25 p-fX bottom-0" v-if="mainData.progress_status==1">
 			<view class="btn80 nn2 colorf w-100">捐款已结束</view>
-		</view> -->
+		</view>
 		
 		<!-- 分享弹框 -->
 		<view class="bg-mask line-h" v-show="share_show">
@@ -198,27 +202,68 @@
 				orderData:[],
 				totalOrder:0,
 				priceData:[10,20,50,100],
-				price:''
-				
+				price:'',
+				isChoose:false,
+				contentHeight:0,
+				//realHeight:0,
+		
+				showHeight:0
 			}
 		},
 		onLoad(options) {
 			const self = this;
 			self.id = options.id
 			self.price = self.priceData[self.jkIndex];
-			self.$Utils.loadAll(['getMainData'], self);
+			const callback = (res) => {
+				self.$Utils.loadAll(['getMainData'], self);
+			};
+			self.$Token.getProjectToken(callback, {
+				refreshToken: true
+			})
 		},
-		onReady() {
-			/* const self = this;
-			var obj=wx.createSelectorQuery();
-			obj.selectAll('.content').boundingClientRect();
-			 console.log(obj.selectAll('.content').boundingClientRect())
-			obj.exec(function (rect) {
-			    console.log(rect[0].height)
-			    console.log(rect[0].width)
-			}); */
+		
+		onReady () {
+			const self = this;
+		    setTimeout(() => {
+				let query = wx.createSelectorQuery();		
+				query.select('.content').boundingClientRect(rect=>{
+					
+					
+					this.contentHeight = rect.height
+					console.log(this.contentHeight);
+					if(this.contentHeight>200){
+						this.showHeight = 200
+					}else{
+						this.showHeight = this.contentHeight+21
+					}
+				},this).exec();
+		    }, 300,this)
+		},
+		onShareAppMessage(ops) {
+			console.log(ops)
+			const self = this;
+			if (ops.from === 'button') {
+				return {
+					title: '邀您和我一起关注['+self.mainData.title+']',
+					path: '/pages/detail/detail?id=' + self.id, //点击分享的图片进到哪一个页面
+					imageUrl: self.mainData && self.mainData.mainImg && self.mainData.mainImg[0] && self.mainData.mainImg[0].url ?
+						self.mainData.mainImg[0].url : '',
+				}
+			} else {
+				return {
+					title: '邀您和我一起关注['+self.mainData.title+']',
+					path: '/pages/detail/detail?id=' + self.id, //点击分享的图片进到哪一个页面
+					imageUrl: self.mainData && self.mainData.mainImg && self.mainData.mainImg[0] && self.mainData.mainImg[0].url ?
+						self.mainData.mainImg[0].url : '',
+				}
+			}
 		},
 		methods: {
+			
+			chooseThis(){
+				const self = this;
+				self.isChoose = !self.isChoose
+			},
 			
 			nextPage(){
 				const self = this;
@@ -241,6 +286,7 @@
 			submit(){
 				const self = this;
 				uni.setStorageSync('canClick', false);
+				
 				if(self.price==''){
 					uni.setStorageSync('canClick', true);
 					self.$Utils.showToast('金额错误', 'none');
@@ -304,6 +350,7 @@
 								if (payData == 1) {
 									setTimeout(function() {
 										self.jk_show = false
+										self.Router.navigateTo({route:{path:'/pages/payEnd/payEnd?id='+self.orderId}})
 									}, 1000);
 								} else {
 									uni.setStorageSync('canClick', true);
@@ -314,6 +361,7 @@
 						} else {
 							setTimeout(function() {
 								self.jk_show = false
+								self.Router.navigateTo({route:{path:'/pages/payEnd/payEnd?id='+self.orderId}})
 							}, 1000);
 						};
 					} else {
@@ -402,6 +450,48 @@
 					project_id:self.id,
 					user_type:0
 				};
+				postData.getAfter = {
+					user:{
+						tableName:'User',
+						middleKey:'user_no',
+						key:'user_no',
+						searchItem:{
+							status:1
+						},
+						condition:'='
+					},
+					order: {
+						tableName: 'Order',
+						searchItem: {
+							status:1,
+							pay_status:1,
+							user_type:0
+						},
+						middleKey: 'id',
+						key: 'team_id',
+						condition: 'in',
+						compute:{
+						  allPrice:[
+						    'sum',
+						    'price',
+						    {
+						      status:1,
+						      pay_status:1,
+						      user_type:0
+						    }
+						  ],
+						  count:[
+						    'count',
+						    'count',
+						    {
+						      status:1,
+						      pay_status:1,
+						      user_type:0
+						    }
+						  ]
+						},
+					},
+				};
 				var callback = function(res) {
 					if (res.info.data.length > 0) {
 						self.teamData = res.info.data
@@ -435,6 +525,11 @@
 			openShow(){
 				const self = this;
 				self.open = !self.open;
+				if(self.open){
+					self.showHeight = self.contentHeight
+				}else{
+					self.showHeight = 200
+				}
 			},
 			
 			Show(type){
@@ -442,6 +537,13 @@
 				if(type==0){
 					self.share_show = !self.share_show;
 				}else{
+					if(!self.jk_show){
+						if(!self.isChoose){
+							self.$Utils.showToast('请阅读并同意捐款须知','none')
+							uni.setStorageSync('canClick', true);
+							return
+						};
+					};
 					self.jk_show = !self.jk_show;
 				}
 			}

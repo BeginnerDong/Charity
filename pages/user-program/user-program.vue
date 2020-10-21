@@ -10,7 +10,8 @@
 				</view>
 			</view>
 			<view class="font-24 color8 bg-f5 p-2 radius10 flex mt-2"
-			@click="Router.navigateTo({route:{path:'/pages/certificate/certificate'}})">
+			:data-id="item.id"
+			@click="Router.navigateTo({route:{path:'/pages/certificate/certificate?id='+$event.currentTarget.dataset.id}})">
 				<view class="flex-1 line-h-lg">
 					<view>捐款次数：1次</view>
 					<view>捐款时间：{{item.create_time}}</view>
